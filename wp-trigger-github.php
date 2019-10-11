@@ -7,7 +7,7 @@
 Plugin Name: WP Trigger Github
 Plugin URI: https://github.com/gglukmann/wp-trigger-github
 Description: Save action triggers Github repository_dispatch action
-Version: 1.0.0
+Version: 1.1.0
 Author: Gert Glükmann
 Author URI: https://github.com/gglukmann
 License: GPLv3
