@@ -37,8 +37,12 @@ class WPTriggerGithub
     flush_rewrite_rules();
   }
 
-  function run_hook($id)
+  function run_hook($post_id)
   {
+    if ((wp_is_post_revision($post_id) || wp_is_post_autosave($post_id))) {
+      return false;
+    }
+
     $github_token = get_option('option_token');
     $github_username = get_option('option_username');
     $github_repo = get_option('option_repo');
