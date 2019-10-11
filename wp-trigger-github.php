@@ -22,14 +22,14 @@ class WPTriggerGithub
 {
   function __construct()
   {
-    add_action('admin_init', array($this, 'my_general_section'));
-    add_action('save_post', array($this, 'publish_static_hook'), 10, 3);
+    add_action('admin_init', array($this, 'general_settings_section'));
+    add_action('save_post', array($this, 'run_hook'), 10, 3);
   }
 
   public function activate()
   {
     flush_rewrite_rules();
-    $this->my_general_section();
+    $this->general_settings_section();
   }
 
   public function deactivate()
@@ -37,7 +37,7 @@ class WPTriggerGithub
     flush_rewrite_rules();
   }
 
-  function publish_static_hook($id)
+  function run_hook($id)
   {
     $github_token = get_option('option_token');
     $github_username = get_option('option_username');
@@ -61,11 +61,11 @@ class WPTriggerGithub
     }
   }
 
-  function my_general_section()
+  function general_settings_section()
   {
     add_settings_section(
-      'my_settings_section',
-      'Github Settings',
+      'general_settings_section',
+      'WP Trigger Github Settings',
       array($this, 'my_section_options_callback'),
       'general'
     );
@@ -74,7 +74,7 @@ class WPTriggerGithub
       'Repository Owner Name',
       array($this, 'my_textbox_callback'),
       'general',
-      'my_settings_section',
+      'general_settings_section',
       array(
         'option_username'
       )
@@ -84,7 +84,7 @@ class WPTriggerGithub
       'Repository Name',
       array($this, 'my_textbox_callback'),
       'general',
-      'my_settings_section',
+      'general_settings_section',
       array(
         'option_repo'
       )
@@ -94,7 +94,7 @@ class WPTriggerGithub
       'Personal Access Token',
       array($this, 'my_password_callback'),
       'general',
-      'my_settings_section',
+      'general_settings_section',
       array(
         'option_token'
       )
@@ -107,7 +107,7 @@ class WPTriggerGithub
 
   function my_section_options_callback()
   {
-    echo '<p>Settings for Github</p>';
+    echo '<p>Add repository owner name, repository name and generated personal access token</p>';
   }
 
   function my_textbox_callback($args)
