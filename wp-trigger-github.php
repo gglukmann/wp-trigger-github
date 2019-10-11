@@ -6,7 +6,7 @@
 /*
 Plugin Name: WP Trigger Github
 Plugin URI: https://github.com/gglukmann/wp-trigger-github
-Description: Save action trigger github repository_dispatch action
+Description: Save action triggers Github repository_dispatch action
 Version: 1.0.0
 Author: Gert Glükmann
 Author URI: https://github.com/gglukmann
@@ -71,7 +71,7 @@ class WPTriggerGithub
     );
     add_settings_field(
       'option_username',
-      'USERNAME',
+      'Repository Owner Name',
       array($this, 'my_textbox_callback'),
       'general',
       'my_settings_section',
@@ -81,7 +81,7 @@ class WPTriggerGithub
     );
     add_settings_field(
       'option_repo',
-      'REPOSITORY NAME',
+      'Repository Name',
       array($this, 'my_textbox_callback'),
       'general',
       'my_settings_section',
@@ -91,7 +91,7 @@ class WPTriggerGithub
     );
     add_settings_field(
       'option_token',
-      'PERSONAL ACCESS TOKEN',
+      'Personal Access Token',
       array($this, 'my_password_callback'),
       'general',
       'my_settings_section',
