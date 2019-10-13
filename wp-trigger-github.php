@@ -24,6 +24,7 @@ class WPTriggerGithub
   {
     add_action('admin_init', array($this, 'general_settings_section'));
     add_action('save_post', array($this, 'run_hook'), 10, 3);
+    add_action('wp_dashboard_setup', array($this, 'build_dashboard_widget'));
   }
 
   public function activate()
@@ -103,15 +104,26 @@ class WPTriggerGithub
         'option_token'
       )
     );
+    add_settings_field(
+      'option_workflow',
+      'Actions Workflow Name',
+      array($this, 'my_textbox_callback'),
+      'general',
+      'general_settings_section',
+      array(
+        'option_workflow'
+      )
+    );
 
     register_setting('general', 'option_token', 'esc_attr');
     register_setting('general', 'option_username', 'esc_attr');
     register_setting('general', 'option_repo', 'esc_attr');
+    register_setting('general', 'option_workflow', 'esc_attr');
   }
 
   function my_section_options_callback()
   {
-    echo '<p>Add repository owner name, repository name and generated personal access token</p>';
+    echo '<p>Add repository owner name, repository name and generated personal access token to trigger Actions workflow.<br />If you want to see status badge on dashboard, add workflow name.</p>';
   }
 
   function my_textbox_callback($args)
@@ -124,6 +136,29 @@ class WPTriggerGithub
   {
     $option = get_option($args[0]);
     echo '<input type="password" id="' . $args[0] . '" name="' . $args[0] . '" value="' . $option . '" />';
+  }
+
+  /**
+   * Create Dashboard Widget for Github Actions deploy status
+   */
+  function build_dashboard_widget()
+  {
+    global $wp_meta_boxes;
+
+    wp_add_dashboard_widget('github_actions_dashboard_status', 'Deploy Status', array($this, 'build_dashboard_status'));
+  }
+
+  function build_dashboard_status()
+  {
+    $github_username = get_option('option_username');
+    $github_repo = get_option('option_repo');
+    $github_workflow = rawurlencode(get_option('option_workflow'));
+
+    $markup = '<a href="https://github.com/' . $github_username . '/' . $github_repo . '/actions" target="_blank" rel="noopener noreferrer">';
+    $markup .= '<img src="https://github.com/' . $github_username . '/' . $github_repo . '/workflows/' . $github_workflow . '/badge.svg" alt="Github Actions Status" />';
+    $markup .= '</a>';
+
+    echo $markup;
   }
 }
 
