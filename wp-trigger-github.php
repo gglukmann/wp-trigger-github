@@ -52,7 +52,7 @@ class WPTriggerGithub
       $args = array(
         'method'  => 'POST',
         'body'    => json_encode(array(
-          'event_type' => 'dispatch'
+          'event_type' => 'wordpress'
         )),
         'headers' => array(
           'Accept' => 'application/vnd.github.everest-preview+json',
