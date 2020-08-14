@@ -10,7 +10,8 @@ Description: Save or update action triggers Github repository_dispatch action
 Version: 1.2.2
 Author: Gert Glükmann
 Author URI: https://github.com/gglukmann
-License: GPLv3
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text-Domain: wp-trigger-github
  */
 
