@@ -41,7 +41,7 @@ class WPTriggerGithub
   function run_hook($post_id)
   {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if (!(wp_is_post_revision($post_id) || wp_is_post_autosave($post_id))) return;
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) return;
 
     $github_token = get_option('option_token');
     $github_username = get_option('option_username');
