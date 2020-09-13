@@ -10,5 +10,5 @@ Save or update action triggers Github repository_dispatch action
 == Installation ==
 - Add to WordPress and activate
 - Go to Settings -> General and scroll to bottom
-- Add repository owner name, repository name and generated personal access token
+- Add repository owner name, repository name and generated personal access token (repo and workflow)
 - If you want to see status badge on dashboard, add workflow name too.

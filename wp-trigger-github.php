@@ -56,7 +56,7 @@ class WPTriggerGithub
           'event_type' => 'wordpress'
         )),
         'headers' => array(
-          'Accept' => 'application/vnd.github.everest-preview+json',
+          'Accept' => 'application/vnd.github.v3+json',
           'Content-Type' => 'application/json',
           'Authorization' => 'token ' . $github_token
         ),
