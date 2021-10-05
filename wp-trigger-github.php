@@ -148,7 +148,7 @@ class WPTriggerGithub
     $github_workflow = rawurlencode(get_option('ga_option_workflow'));
 
     $markup = '<a href="https://github.com/' . $github_username . '/' . $github_repo . '/actions" target="_blank" rel="noopener noreferrer">';
-    $markup .= '<img src="https://github.com/' . $github_username . '/' . $github_repo . '/workflows/' . $github_workflow . '/badge.svg" alt="Github Actions Status" />';
+    $markup .= '<img src="https://github.com/' . $github_username . '/' . $github_repo . '/actions/workflows/' . $github_workflow . '/badge.svg" alt="Github Actions Status" />';
     $markup .= '</a>';
 
     echo $markup;
