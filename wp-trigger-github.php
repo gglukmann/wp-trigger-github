@@ -24,7 +24,7 @@ class WPTriggerGithub
   function __construct()
   {
     add_action('admin_init', [$this, 'generalSettingsSection']);
-    add_action('save_post', [$this, 'runHook'], 10, 3);
+    add_action('wp_after_insert_post', [$this, 'runHook'], 10, 3);
     add_action('wp_dashboard_setup', [$this, 'buildDashboardWidget']);
   }
 
@@ -32,38 +32,72 @@ class WPTriggerGithub
   {
     flush_rewrite_rules();
     $this->generalSettingsSection();
+    add_option('wp_trigger_github_last_triggered_timestamp');
   }
 
   public function deactivate()
   {
     flush_rewrite_rules();
+    delete_option('wp_trigger_github_last_triggered_timestamp');
+  }
+
+  function getLastTriggeredTimestamp(){
+      return get_option('wp_trigger_github_last_triggered_timestamp');
+  }
+
+  function triggerGithubRepositoryDispatch(){
+      $github_token = get_option('ga_option_token');
+      $github_username = get_option('ga_option_username');
+      $github_repo = get_option('ga_option_repo');
+
+      if ($github_token && $github_username && $github_repo) {
+          $url = 'https://api.github.com/repos/' . $github_username . '/' . $github_repo . '/dispatches';
+          $args = array(
+              'method'  => 'POST',
+              'body'    => json_encode(array(
+                  'event_type' => 'wordpress',
+              )),
+              'headers' => array(
+                  'Accept' => 'application/vnd.github.v3+json',
+                  'Content-Type' => 'application/json',
+                  'Authorization' => 'token ' . $github_token
+              ),
+          );
+
+          wp_remote_post($url, $args);
+      }
   }
 
   function runHook($post_id)
   {
+      $post = get_post($post_id);
+
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) return;
 
-    $github_token = get_option('ga_option_token');
-    $github_username = get_option('ga_option_username');
-    $github_repo = get_option('ga_option_repo');
+    if ($this->getLastTriggeredTimestamp() == false){
+        update_option('wp_trigger_github_last_triggered_timestamp', $post->post_modified);
+        $this->triggerGithubRepositoryDispatch();
+    } else {
+        try{
+            $modified_at_time = new DateTime($post->post_modified);
+            $last_triggered_time = new DateTime($this->getLastTriggeredTimestamp());
+        } catch(Exception $e){
+            update_option('wp_trigger_github_last_triggered_timestamp', $post->post_modified);
+            $this->triggerGithubRepositoryDispatch();
+        }
 
-    if ($github_token && $github_username && $github_repo) {
-      $url = 'https://api.github.com/repos/' . $github_username . '/' . $github_repo . '/dispatches';
-      $args = array(
-        'method'  => 'POST',
-        'body'    => json_encode(array(
-          'event_type' => 'wordpress'
-        )),
-        'headers' => array(
-          'Accept' => 'application/vnd.github.v3+json',
-          'Content-Type' => 'application/json',
-          'Authorization' => 'token ' . $github_token
-        ),
-      );
+        // time since last trigger in seconds
+        $duration_since_last_trigger = ($last_triggered_time->diff($modified_at_time, true))->s;
 
-      wp_remote_post($url, $args);
+        // only trigger GitHub action if it's been more than five seconds since the last one was triggered
+        if ($duration_since_last_trigger > 5){
+            $this->triggerGithubRepositoryDispatch();
+            update_option('wp_trigger_github_last_triggered_timestamp', $post->post_modified);
+        }
     }
+
+
   }
 
   function generalSettingsSection()
